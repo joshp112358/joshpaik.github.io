@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Areas Simulation Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        canvas {
+            max-width: 800px;
+            margin: 20px auto;
+            display: block;
+        }
+        #inputContainer {
+            margin: 20px auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Areas Simulation Results</h1>
+
+    <div id="inputContainer">
+        <label for="nInput">N:</label>
+        <input type="number" id="nInput" value="20000">
+        <label for="numStepsInput">Num Steps:</label>
+        <input type="number" id="numStepsInput" value="100000">
+        <button id="runButton">Run Simulation</button>
+    </div>
+
+    <div id="log10PlotContainer">
+        <canvas id="log10Plot" width="600" height="400"></canvas>
+    </div>
+
+    <script>
+        let myChart = null; // Variable to store the chart instance
+
+        document.getElementById('runButton').addEventListener('click', runSimulation);
+
+        function runSimulation() {
+            const n = parseInt(document.getElementById('nInput').value);
+            const numSteps = parseInt(document.getElementById('numStepsInput').value);
+
+            function randomNumbersWithSum(n, totalSum) {
+                const numbers = Array(n).fill(1.0);
+                const scalingFactor = totalSum / numbers.reduce((a, b) => a + b, 0);
+                return numbers.map(num => num * scalingFactor);
+            }
+
+            function performSteps(numbers, numSteps) {
+                for (let i = 0; i < numSteps; i++) {
+                    const indices = [];
+                    while (indices.length < 3) {
+                        const index = Math.floor(Math.random() * numbers.length);
+                        if (!indices.includes(index)) {
+                            indices.push(index);
+                        }
+                    }
+                    const [firstIndex, secondIndex, thirdIndex] = indices;
+                    const firstVal = numbers[firstIndex];
+                    const secondVal = numbers[secondIndex];
+                    const thirdVal = numbers[thirdIndex];
+
+                    numbers[firstIndex] = firstVal + secondVal;
+                    numbers[secondIndex] = thirdVal * 0.5;
+                    numbers[thirdIndex] = thirdVal * 0.5;
+                }
+                return numbers;
+            }
+
+            function calculateLog10(numbers) {
+                 const sortedNumbers = [...numbers].sort((a, b) => a - b);
+                 return sortedNumbers.map(num => num > 0 ? Math.log10(num) : -Infinity);
+            }
+
+            const numbers1 = randomNumbersWithSum(n, n);
+            const finalNumbers1 = performSteps(numbers1, numSteps);
+            const log10Data1 = calculateLog10(finalNumbers1);
+
+            const numbers2 = randomNumbersWithSum(n, n);
+            const finalNumbers2 = performSteps(numbers2, numSteps);
+            const log10Data2 = calculateLog10(finalNumbers2);
+
+            const numbers3 = randomNumbersWithSum(n, n);
+            const finalNumbers3 = performSteps(numbers3, numSteps);
+            const log10Data3 = calculateLog10(finalNumbers3);
+
+            const ctxLog10 = document.getElementById('log10Plot').getContext('2d');
+
+            if (myChart) {
+                myChart.destroy(); // Destroy the previous chart instance if it exists
+            }
+
+            myChart = new Chart(ctxLog10, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Simulation 1',
+                        data: log10Data1.map((y, x) => ({ x: x, y: y })),
+                        backgroundColor: 'red',
+                        pointRadius: 2
+                    },
+                    /*{
+                        label: 'Simulation 2',
+                        data: log10Data2.map((y, x) => ({ x: x, y: y })),
+                        backgroundColor: 'blue',
+                        pointRadius: 2
+                    },
+                    {
+                        label: 'Simulation 3',
+                        data: log10Data3.map((y, x) => ({ x: x, y: y })),
+                        backgroundColor: 'green',
+                        pointRadius: 2
+                    }*/
+                    ]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Index of Sorted Areas'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'log10(Areas)'
+                            },
+                            min: -6,
+                            max: 2
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    animation: false
+                }
+            });
+        }
+
+        runSimulation(); // Initial run
+    </script>
+</body>
+</html>
