@@ -20,7 +20,7 @@
 
     <div id="inputContainer">
         <label for="nInput">N:</label>
-        <input type="number" id="nInput" value="20000">
+        <input type="number" id="nInput" value="50">
         <label for="numStepsInput">Num Steps:</label>
         <input type="number" id="numStepsInput" value="100000">
         <button id="runButton">Run Simulation</button>
@@ -95,10 +95,10 @@
                     datasets: [{
                         label: 'Simulation 1',
                         data: log10Data1.map((y, x) => ({ x: x, y: y })),
-                        backgroundColor: 'red',
+                        backgroundColor: 'black',
                         pointRadius: 2
                     },
-                    /*{
+                    {
                         label: 'Simulation 2',
                         data: log10Data2.map((y, x) => ({ x: x, y: y })),
                         backgroundColor: 'blue',
@@ -107,9 +107,9 @@
                     {
                         label: 'Simulation 3',
                         data: log10Data3.map((y, x) => ({ x: x, y: y })),
-                        backgroundColor: 'green',
+                        backgroundColor: 'orange',
                         pointRadius: 2
-                    }*/
+                    }
                     ]
                 },
                 options: {
